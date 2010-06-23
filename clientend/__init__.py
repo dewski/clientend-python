@@ -18,6 +18,8 @@ class Agency(object):
         'clients': 'clients.json',
         'project': 'clients/%(client)s/projects/%(id)s.json',
         'projects': 'clients/%(client)s/projects.json',
+        'approval': 'clients/%(client)s/projects/%(project)s/approvals/%(id)s.json',
+        'approvals': 'clients/%(client)s/projects/%(project)s/approvals.json',
         'page': 'clients/%(client)s/projects/%(project)s/pages/%(id)s.json',
         'pages': 'clients/%(client)s/projects/%(project)s/pages.json',
         'revision': 'clients/%(client)s/projects/%(project)s/pages/%(page)s/revision/%(id).json',
@@ -68,6 +70,15 @@ class Agency(object):
         
     def get_project(self, client, id):
         endpoint = self.endpoint('project', client=client, id=id)
+        return self._request(endpoint, 'GET')
+    
+    # Approvals
+    def get_approvals(self, client, project):
+        endpoint = self.endpoint('approvals', client=client, project=project)
+        return self._request(endpoint, 'GET')
+        
+    def get_approvals(self, client, project, id):
+        endpoint = self.endpoint('approval', client=client, project=project, id=id)
         return self._request(endpoint, 'GET')
     
     # Projects
