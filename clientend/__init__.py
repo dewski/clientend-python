@@ -14,7 +14,7 @@ API_VERSION = '1'
 class Agency(object):
     debug = False
     endpoints = {
-				'agency': 'agencies.json',
+        'agency': 'agencies.json',
         'client': 'clients/%(id)s.json',
         'clients': 'clients.json',
         'project': 'clients/%(client)s/projects/%(id)s.json',
