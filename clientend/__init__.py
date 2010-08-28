@@ -14,6 +14,7 @@ API_VERSION = '1'
 class Agency(object):
     debug = False
     endpoints = {
+				'agency': 'agencies.json',
         'client': 'clients/%(id)s.json',
         'clients': 'clients.json',
         'project': 'clients/%(client)s/projects/%(id)s.json',
@@ -26,33 +27,32 @@ class Agency(object):
         'revisions': 'clients/%(client)s/projects/%(project)s/pages/%(page)s/revisions.json'
     }
     
-    def __init__(self, subdomain, api_key, api_version=API_VERSION, host="api.clientend.com"):
+    def __init__(self, api_key, api_version=API_VERSION, host='api.clientend.com'):
         self.host = host
         self.api_version = api_version
         self.api_key = api_key
-        self.subdomain = subdomain
         self.http = Http()
-        self.uri = "http://%s/v%s" % (host, api_version)
+        self.uri = 'http://%s/v%s' % (host, api_version)
         
-        if self.api_key is None or self.subdomain is None:
-            raise ValueError("Must set API Key")
+        if self.api_key is None:
+            raise ValueError('Must set API Key')
     
     def __str__(self):
         return self.__unicode__()
     
     def __unicode__(self):
-        return 'Agency (api_key=%s, subdomain=%s)' % (self.api_key, self.subdomain)
+        return 'Agency (api_key=%s)' % (self.api_key)
 
     def endpoint(self, name, **kwargs):
         try:
             endpoint = self.endpoints[name]
         except KeyError:
-            raise Exception('No endpoint named "%s"' % name)
+            raise Exception("No endpoint named '%s'" % name)
         try:
             endpoint = endpoint % kwargs
         except KeyError, e:
-            raise TypeError('Missing required argument "%s"' % (e.args[0],))
-        return urljoin(urljoin(self.uri, 'api/v'+ self.api_version + '/'), endpoint)
+            raise TypeError("Missing required argument '%s'" % (e.args[0],))
+        return urljoin(urljoin(self.uri, 'v'+ self.api_version + '/'), endpoint)
     
     # Clients
     def get_clients(self):
@@ -77,7 +77,7 @@ class Agency(object):
         endpoint = self.endpoint('approvals', client=client, project=project)
         return self._request(endpoint, 'GET')
         
-    def get_approvals(self, client, project, id):
+    def get_approval(self, client, project, id):
         endpoint = self.endpoint('approval', client=client, project=project, id=id)
         return self._request(endpoint, 'GET')
     
@@ -108,7 +108,7 @@ class Agency(object):
             if isinstance(data, dict):
                 data['api_key'] = self.api_key
         
-        if method == "GET" and isinstance(data, dict):
+        if method == 'GET' and isinstance(data, dict):
             endpoint = endpoint + '?' + urllib.urlencode(data)
         else:
             if isinstance(data, dict):
@@ -126,7 +126,7 @@ class Agency(object):
             try:
                 content = json.loads(content)
             except ValueError:
-                raise DecodeError(resp, content)
+                return content
 
         if resp['status'][0] != '2':
             code = resp['status']
